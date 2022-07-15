@@ -1,5 +1,5 @@
-import { StateStore } from '../../components/testStore/slice';
+import { StateStore } from '../../components/testStore/slice'
 
 export type State = {
-  testStore: StateStore;
-};
+  testStore: StateStore
+}

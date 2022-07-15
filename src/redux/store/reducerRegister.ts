@@ -1,23 +1,23 @@
 class ReducerRegistry {
-  reducers: any;
-  emitChange: any;
+  reducers: any
+  emitChange: any
   constructor() {
-    this.reducers = {};
-    this.emitChange = null;
+    this.reducers = {}
+    this.emitChange = null
   }
 
   register(name: any, reducer: any) {
     this.reducers = {
       ...this.reducers,
       [name]: reducer,
-    };
+    }
     if (this.emitChange) {
-      this.emitChange(this.reducers);
+      this.emitChange(this.reducers)
     }
   }
   setChangeListener(listener: any) {
-    this.emitChange = listener;
+    this.emitChange = listener
   }
 }
 
-export default new ReducerRegistry();
+export default new ReducerRegistry()

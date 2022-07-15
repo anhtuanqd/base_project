@@ -5,4 +5,5 @@ module.exports = {
   endOfLine: 'lf',
   tabWidth: 2,
   printWidth: 50,
-};
+  semi: false,
+}

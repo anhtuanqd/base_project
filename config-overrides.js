@@ -1,18 +1,18 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-const getPublicUrlOrPath = require('react-dev-utils/getPublicUrlOrPath');
-const appPackagePath = path.resolve(__dirname, 'package.json');
-const appPackageJson = require(appPackagePath);
-const appBuild = path.resolve(__dirname, './build/');
-const appSrc = path.resolve(__dirname, 'src/');
+const getPublicUrlOrPath = require('react-dev-utils/getPublicUrlOrPath')
+const appPackagePath = path.resolve(__dirname, 'package.json')
+const appPackageJson = require(appPackagePath)
+const appBuild = path.resolve(__dirname, './build/')
+const appSrc = path.resolve(__dirname, 'src/')
 const publicUrlOrPath = getPublicUrlOrPath(
   process.env.NODE_ENV === 'development',
   require(appPackagePath).homepage,
   process.env.PUBLIC_URL,
-);
+)
 
 // Utility function to replace/remove specific plugin in a webpack config
 function replacePlugin(plugins, nameMatcher, newPlugin) {
@@ -21,20 +21,20 @@ function replacePlugin(plugins, nameMatcher, newPlugin) {
       plugin.constructor &&
       plugin.constructor.name &&
       nameMatcher(plugin.constructor.name)
-    );
-  });
+    )
+  })
   return i > -1
     ? plugins
         .slice(0, i)
         .concat(newPlugin || [])
         .concat(plugins.slice(i + 1))
-    : plugins;
+    : plugins
 }
 
 module.exports = {
   webpack: function (config, env) {
-    const isEnvDevelopment = env === 'development';
-    const isEnvProduction = env === 'production';
+    const isEnvDevelopment = env === 'development'
+    const isEnvProduction = env === 'production'
 
     config.entry = {
       admin: [
@@ -47,7 +47,7 @@ module.exports = {
           require.resolve('react-dev-utils/webpackHotDevClient'),
         path.resolve(__dirname, 'src/index.tsx'),
       ].filter(Boolean),
-    };
+    }
 
     config.output = {
       path: isEnvProduction ? appBuild : undefined,
@@ -68,21 +68,21 @@ module.exports = {
             path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
       chunkLoadingGlobal: `webpackJsonp${appPackageJson.name}`,
       globalObject: 'this',
-    };
+    }
 
     config.plugins = config.plugins.filter(
       (p) => !/WebpackManifestPlugin/.test(p.constructor),
-    );
+    )
 
     const miniCssExtractPlugin = new MiniCssExtractPlugin({
       filename: 'static/css/[name].css',
-    });
+    })
 
     config.plugins = replacePlugin(
       config.plugins,
       (name) => /MiniCssExtractPlugin/i.test(name),
       miniCssExtractPlugin,
-    );
+    )
 
     config.plugins = [
       ...config.plugins,
@@ -97,35 +97,35 @@ module.exports = {
         publicPath: publicUrlOrPath,
         generate: (seed, files, entrypoints) => {
           const manifestFiles = files.reduce((manifest, file) => {
-            manifest[file.name] = file.path;
-            return manifest;
-          }, seed);
+            manifest[file.name] = file.path
+            return manifest
+          }, seed)
 
-          const entrypointFiles = {};
+          const entrypointFiles = {}
           Object.keys(entrypoints).forEach((entrypoint) => {
             entrypointFiles[entrypoint] = entrypoints[entrypoint].filter(
               (fileName) => !fileName.endsWith('.map'),
-            );
-          });
+            )
+          })
 
           return {
             files: manifestFiles,
             entrypoints: entrypointFiles,
-          };
+          }
         },
       }),
-    ];
-    return config;
+    ]
+    return config
   },
 
   devServer: function (configFunction) {
     return function (proxy, allowedHost) {
-      const config = configFunction(proxy, allowedHost);
+      const config = configFunction(proxy, allowedHost)
       config.historyApiFallback = {
         disableDotRule: true,
-        rewrites: [{ from: /^\/trade.html/, to: '/build/admin.html' }],
-      };
-      return config;
-    };
+        rewrites: [{ from: /^\/admin/, to: '/admin.html' }],
+      }
+      return config
+    }
   },
-};
+}
