@@ -2,15 +2,21 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import reportWebVitals from './reportWebVitals'
 import { Provider } from 'react-redux'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import store from './redux/store/store'
-import TestStore from '../src/components/testStore/TestStore'
+import TestStore from './containers/testStore/TestStore'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <TestStore />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<TestStore />} />
+        </Routes>
+      </BrowserRouter>
     </Provider>
+    ,
   </React.StrictMode>,
 )
 
