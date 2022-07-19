@@ -1,13 +1,17 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin')
+const fs = require('fs')
+const paths = require('react-scripts/config/paths')
+const appDirectory = fs.realpathSync(process.cwd())
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 const getPublicUrlOrPath = require('react-dev-utils/getPublicUrlOrPath')
 const appPackagePath = path.resolve(__dirname, 'package.json')
-const appPackageJson = require(appPackagePath)
-const appBuild = path.resolve(__dirname, './build/')
-const appSrc = path.resolve(__dirname, 'src/')
+// const publicPath = isEnvProduction ? paths.servedPath : isEnvDevelopment && '/'
+const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath)
+const isEnvDevelopment = process.env.NODE_ENV !== 'production'
+const isEnvProduction = process.env.NODE_ENV === 'production'
 const publicUrlOrPath = getPublicUrlOrPath(
   process.env.NODE_ENV === 'development',
   require(appPackagePath).homepage,
@@ -31,43 +35,82 @@ function replacePlugin(plugins, nameMatcher, newPlugin) {
     : plugins
 }
 
+const appModules = [
+  {
+    name: 'index',
+    title: 'index',
+    appHtml: resolveApp('public/index.html'),
+    appIndexJs: resolveApp('src/index.tsx'),
+  },
+  {
+    name: 'admin',
+    title: 'admin',
+    appHtml: resolveApp('public/admin.html'),
+    appIndexJs: resolveApp('src/admin.tsx'),
+  },
+]
+
+let entries = {}
+appModules.forEach((appPage) => {
+  entries[appPage.name] = [
+    appPage.appIndexJs,
+    //isEnvDevelopment && require.resolve('react-dev-utils/webpackHotDevClient')
+  ].filter(Boolean)
+})
+
+const htmlPlugins = []
+appModules.forEach((appPage) => {
+  htmlPlugins.push(
+    new HtmlWebpackPlugin(
+      Object.assign(
+        {},
+        {
+          inject: true,
+          template: appPage.appHtml,
+          filename: `${appPage.name}.html`,
+          title: appPage.title,
+          chunks: [appPage.name],
+        },
+        isEnvProduction
+          ? {
+              minify: {
+                removeComments: true,
+                collapseWhitespace: true,
+                removeRedundantAttributes: true,
+                useShortDoctype: true,
+                removeEmptyAttributes: true,
+                removeStyleLinkTypeAttributes: true,
+                keepClosingSlash: true,
+                minifyJS: true,
+                minifyCSS: true,
+                minifyURLs: true,
+              },
+            }
+          : undefined,
+      ),
+    ),
+  )
+})
+
 module.exports = {
   webpack: function (config, env) {
-    const isEnvDevelopment = env === 'development'
-    const isEnvProduction = env === 'production'
-
-    config.entry = {
-      admin: [
-        isEnvDevelopment &&
-          require.resolve('react-dev-utils/webpackHotDevClient'),
-        path.resolve(__dirname, 'src/admin.tsx'),
-      ].filter(Boolean),
-      index: [
-        isEnvDevelopment &&
-          require.resolve('react-dev-utils/webpackHotDevClient'),
-        path.resolve(__dirname, 'src/index.tsx'),
-      ].filter(Boolean),
-    }
+    ;(config.entry = entries),
+      // Replace last htmlPlugin
+      (config.plugins = replacePlugin(
+        config.plugins,
+        (name) => /HtmlWebpackPlugin/i.test(name),
+        htmlPlugins[0],
+      ))
+    htmlPlugins.shift()
+    htmlPlugins.forEach((htmlPlugin) => {
+      config.plugins.push(htmlPlugin)
+    })
 
     config.output = {
-      path: isEnvProduction ? appBuild : undefined,
-      pathinfo: isEnvDevelopment,
+      ...config.output,
       filename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].js'
-        : isEnvDevelopment && 'static/js/[name].bundle.js',
-      // futureEmitAssets: true,
-      chunkFilename: isEnvProduction
-        ? 'static/js/[name].[contenthash:8].chunk.js'
-        : isEnvDevelopment && 'static/js/[name].chunk.js',
-      publicPath: publicUrlOrPath,
-      devtoolModuleFilenameTemplate: isEnvProduction
-        ? (info) =>
-            path.relative(appSrc, info.absoluteResourcePath).replace(/\\/g, '/')
-        : isEnvDevelopment &&
-          ((info) =>
-            path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
-      chunkLoadingGlobal: `webpackJsonp${appPackageJson.name}`,
-      globalObject: 'this',
+        : isEnvDevelopment && 'static/js/[name]-bundle.js',
     }
 
     config.plugins = config.plugins.filter(
