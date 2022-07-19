@@ -17,18 +17,17 @@ export const getConfig = (parameters) => {
 export const request = (
   method: string,
   url: string,
-  queryParametters: any,
+  queryParameters: any,
   jsonBody: any,
   form: any,
   config: any,
 ) => {
-  method = method.toUpperCase()
-  let keys = Object.keys(queryParametters)
+  method = method.toLowerCase()
+  let keys = Object.keys(queryParameters)
   let queryUrl = url
   if (keys.length > 0) {
-    queryUrl = url + '?' + qs.stringify(queryParametters)
+    queryUrl = url + '?' + qs.stringify(queryParameters)
   }
-
   const headers: any = {}
   if (method !== 'GET') {
     headers['content-type'] = 'application/x-www-form-urlencoded'
@@ -67,6 +66,7 @@ export const request = (
         config,
       )
     }
+
     return axios(queryUrl, mergedConfig)
   }
 }

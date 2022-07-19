@@ -1,8 +1,18 @@
-// export const getData = (parameters = {}) => {
-//     let path = '/todos'
-//     let queryParametters = {}
-//     let jsonBody = {}
-//     let form = {}
+import { getConfig, getDomain, mergeQueryParams, request } from './apiHelper'
 
-//     queryParametters
-// }
+export const getData = (parameters = {}) => {
+  let path = 'todos'
+  let queryParameters = {}
+  let jsonBody = {}
+  let form = {}
+
+  queryParameters = mergeQueryParams(parameters, queryParameters)
+  return request(
+    'GET',
+    getDomain(parameters) + path,
+    queryParameters,
+    jsonBody,
+    form,
+    getConfig(parameters),
+  )
+}
