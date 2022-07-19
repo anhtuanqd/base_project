@@ -18,7 +18,7 @@ const loadingReducer = createSlice({
       state.isLoading += 1
     },
     setDecreaseLoading: (state: StateLoading) => {
-      state.isLoading -= 1
+      state.isLoading = state.isLoading > 0 ? state.isLoading - 1 : 0
     },
     setErrorState: (state, action) => {
       state.errorMessage = action.payload

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import reportWebVitals from './reportWebVitals'
 import { Provider } from 'react-redux'
@@ -7,9 +7,11 @@ import TestStore from './containers/testStore/TestStore'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
-  <Provider store={store}>
-    <TestStore />
-  </Provider>,
+  <StrictMode>
+    <Provider store={store}>
+      <TestStore />
+    </Provider>
+  </StrictMode>,
 )
 
 // If you want to start measuring performance in your app, pass a function

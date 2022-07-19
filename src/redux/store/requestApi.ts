@@ -7,8 +7,6 @@ import store from './store'
 
 export function requestAxios(axiosObj: any) {
   const startRequest = () => {
-    console.log('dispatch request')
-
     store.dispatch(setIncreaseLoading())
   }
 
