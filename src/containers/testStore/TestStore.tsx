@@ -17,7 +17,6 @@ const TestStore = () => {
   // }, [])
   const array = [{ good: 'asdasd' }, null, { great: 'sdas' }, undefined, {}, 0]
   const a = array.filter(Boolean).map((item) => item)
-
   console.log(a)
 
   return (
