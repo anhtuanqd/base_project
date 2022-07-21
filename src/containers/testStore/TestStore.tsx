@@ -1,32 +1,31 @@
-import { getData } from 'api/testApi'
-import React, { memo, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchDataTest, getDataStoree } from 'redux/reducer/testReducerApi'
-import { requestAxios } from 'redux/store/requestApi'
-import { getLoadingStore } from 'redux/store/sliceLoading'
+import { getErrorStore, getLoadingStore } from 'redux/reducer/sliceLoading'
+import { getDataStoree, getDataTodo } from 'redux/reducer/sliceTestApi'
+import { AppDispatch } from 'redux/store/store'
 
 const TestStore = () => {
-  // const a = useSelector(getDataStoree)
+  // const dispatch = useDispatch<AppDispatch>()
+  // const b = useSelector(getDataStoree)
+  // console.log(b)
+  // const a = useSelector(getLoadingStore)
   // console.log(a)
-  const dispatch = useDispatch()
+  // const b = useSelector(getErrorStore)
+  // console.log(b)
   // useEffect(() => {
-  //   dispatch(fetchDataTest({}))
+  //   dispatch(getDataTodo())
   // }, [])
-  const a = useSelector(getLoadingStore)
+
+  const array = [{ good: 'asdasd' }, null, { great: 'sdas' }, undefined, {}, 0]
+  const a = array.filter(Boolean).map((item) => item)
+
   console.log(a)
-  const fetch = async () => {
-    const a = await getData()
-    console.log(a.data)
-  }
-  useEffect(() => {
-    requestAxios(fetch())
-  }, [])
+
   return (
     <>
       <h1>test</h1>
-      <button onClick={fetch}>aaaaaa</button>
     </>
   )
 }
 
-export default memo(TestStore)
+export default TestStore

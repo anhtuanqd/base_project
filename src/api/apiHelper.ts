@@ -17,12 +17,12 @@ export const getConfig = (parameters) => {
 export const request = (
   method: string,
   url: string,
-  queryParameters: any,
+  queryParameters: object,
   jsonBody: any,
   form: any,
   config: any,
 ) => {
-  method = method.toLowerCase()
+  method = method.toUpperCase()
   let keys = Object.keys(queryParameters)
   let queryUrl = url
   if (keys.length > 0) {
@@ -69,11 +69,13 @@ export const request = (
 
     return axios(queryUrl, mergedConfig)
   }
+
+  return axios(queryUrl)
 }
 
 export const mergeQueryParams = (parameters, queryParameters) => {
   if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+    Object.keys(parameters.$queryParameters).forEach((parameterName) => {
       let parameter = parameters.$queryParameters[parameterName]
       queryParameters[parameterName] = parameter
     })

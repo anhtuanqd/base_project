@@ -17,6 +17,7 @@
         "semi": false,
         "endOfLine": "auto"
       }
-    ]
+    ],
+    "no-unused-vars": ["warn", { "caughtErrors": "all" }]
   }
 }

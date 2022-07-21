@@ -18,3 +18,4 @@ reducerRegister.setChangeListener((reducers: object) => {
 })
 
 export default store
+export type AppDispatch = typeof store.dispatch
