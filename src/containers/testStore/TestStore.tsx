@@ -1,29 +1,71 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { getErrorStore, getLoadingStore } from 'redux/reducer/sliceLoading'
-import { getDataStoree, getDataTodo } from 'redux/reducer/sliceTestApi'
-import { AppDispatch } from 'redux/store/store'
+import { isEmpty } from 'lodash'
+import React from 'react'
+import { useSelector } from 'react-redux'
+import { Field, reduxForm, SubmissionError } from 'redux-form'
+import { createToast } from './createToast'
+import InputComponent from './InputComponent'
 
-const TestStore = () => {
-  // const dispatch = useDispatch<AppDispatch>()
-  // const b = useSelector(getDataStoree)
-  // console.log(b)
-  // const a = useSelector(getLoadingStore)
-  // console.log(a)
-  // const b = useSelector(getErrorStore)
-  // console.log(b)
-  // useEffect(() => {
-  //   dispatch(getDataTodo())
-  // }, [])
-  const array = [{ good: 'asdasd' }, null, { great: 'sdas' }, undefined, {}, 0]
-  const a = array.filter(Boolean).map((item) => item)
-  console.log(a)
-
+const TestStore = (props) => {
   return (
-    <>
-      <h1>test</h1>
-    </>
+    <form className="form-search-top" onSubmit={props.handleSubmit}>
+      <div className="select-field">
+        <label>Tên Level:</label>
+        <Field
+          className="col-md-12 p-0"
+          name="name"
+          placeholder="Nhập tên skill"
+          component={InputComponent}
+        />
+        <label>Thứ tự</label>
+        <Field
+          className="col-md-12 p-0"
+          name="order"
+          placeholder="Nhập thứ tự"
+          component={InputComponent}
+          disabled={true}
+        />
+        <label>Thứ tự mới</label>
+        <Field
+          className="col-md-12 p-0"
+          name="order_new"
+          placeholder="Nhập thứ tự mới"
+          component={InputComponent}
+        />
+        <button className="btn btn-success f-right" type="submit">
+          Edit
+        </button>
+      </div>
+    </form>
   )
 }
 
-export default TestStore
+const handleSubmit = async (values, props) => {
+  console.log(values)
+
+  values.order_old = values.order
+  values.job_skill_id = props.skillId
+  let errors = {}
+  if (
+    (values.order_new !== undefined &&
+      values.order_new &&
+      isNaN(values.order_new)) ||
+    values.order_new < 0
+  ) {
+    errors = {
+      ...errors,
+      ...{ order_new: 'Trường này chỉ nhận số nguyên dương' },
+    }
+  }
+  if (!isEmpty(errors)) {
+    const message: string[] = Object.values(errors)
+    createToast({ type: 'error', message })
+    throw new SubmissionError(errors)
+  }
+}
+
+// export default TestStore
+export default reduxForm({
+  form: 'syncValidation',
+  enableReinitialize: true,
+  onSubmit: handleSubmit,
+})(TestStore)
