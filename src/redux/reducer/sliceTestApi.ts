@@ -13,8 +13,8 @@ export const getDataTodo = createAsyncThunk('fetchData/Todo', async () => {
     const data = await getData()
     return data.data
   }
-  const a = await requestAxios(fetch())
-  return a
+  const listTodo = await requestAxios(fetch())
+  return listTodo
 })
 
 const testCallApi = createSlice({
